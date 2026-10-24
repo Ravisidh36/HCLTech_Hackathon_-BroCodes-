@@ -32,10 +32,20 @@ class Settings(BaseSettings):
     gemini_api_key: str = ""
     gemini_model: str = "gemini-2.5-flash"
 
-    # Models
+    # Models (already cached locally; offline mode avoids slow network checks)
     hf_home: str = "D:/cache/huggingface"
+    hf_offline: bool = True
     embedding_model: str = "BAAI/bge-m3"
     rerank_model: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+
+    # Retrieval
+    rag_candidates: int = 10  # per channel (dense and keyword) before fusion
+    rag_top_k: int = 5  # evidence chunks kept after reranking
+    # Cross-encoder score below which evidence is not trusted (R3). Calibrated with
+    # scripts.calibrate_threshold: answerable questions scored >= -1.8, unanswerable <= -6.9.
+    rag_min_score: float = -4.0
+    # Topics whose best chunk scores more than this below the top chunk are treated as off-topic.
+    rag_topic_gap: float = 5.0
 
     # Hospital local time for appointments and slots
     timezone: str = "Asia/Kolkata"
@@ -77,6 +87,9 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     settings = Settings()
-    # HuggingFace reads HF_HOME at import time, so set it before any model library loads.
+    # HuggingFace reads these at import time, so set them before any model library loads.
     os.environ.setdefault("HF_HOME", settings.hf_home)
+    if settings.hf_offline:
+        os.environ.setdefault("HF_HUB_OFFLINE", "1")
+        os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
     return settings

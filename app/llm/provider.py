@@ -46,11 +46,12 @@ _BUILDERS = {"groq": _groq, "gemini": _gemini}
 
 
 def model_label() -> str:
-    """Primary model identifier, recorded in the audit log (R10)."""
+    """Identifier of the model that serves requests first, recorded in the audit log (R10)."""
     settings = get_settings()
-    if settings.llm_provider == "gemini":
-        return f"gemini:{settings.gemini_model}"
-    return f"groq:{settings.groq_model}"
+    labels = {"groq": f"groq:{settings.groq_model}", "gemini": f"gemini:{settings.gemini_model}"}
+    keys = {"groq": settings.groq_api_key, "gemini": settings.gemini_api_key}
+    other = "gemini" if settings.llm_provider == "groq" else "groq"
+    return labels[settings.llm_provider] if keys[settings.llm_provider] else labels[other]
 
 
 def get_chat_model(temperature: float = 0.0) -> Runnable:
