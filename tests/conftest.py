@@ -1,7 +1,7 @@
 import pytest
 from sqlalchemy import select
 from sqlalchemy.engine import Engine
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, sessionmaker
 
 from app.config import get_settings
 from app.db import make_engine
@@ -40,6 +40,44 @@ def db(test_engine: Engine) -> Session:
     session.close()
     transaction.rollback()
     connection.close()
+
+
+@pytest.fixture(scope="session")
+def app_session_factory(test_engine: Engine) -> sessionmaker:
+    """Sessions on the test database as the least-privilege app role, like the running API."""
+    engine = make_engine(get_settings().test_app_database_url)
+    yield sessionmaker(bind=engine, autoflush=False, expire_on_commit=False)
+    engine.dispose()
+
+
+@pytest.fixture
+def client(app_session_factory: sessionmaker):
+    """API client wired to the test database. No lifespan, so models load lazily only if used."""
+    from fastapi.testclient import TestClient
+
+    from app.api.ratelimit import limiter
+    from app.db import get_db, get_session_factory
+    from app.main import app
+
+    def test_db():
+        with app_session_factory() as session:
+            yield session
+
+    app.dependency_overrides[get_db] = test_db
+    app.dependency_overrides[get_session_factory] = lambda: app_session_factory
+    limiter.reset()
+    yield TestClient(app)
+    app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def login(client):
+    def do_login(username: str, password: str) -> dict[str, str]:
+        response = client.post("/auth/login", json={"username": username, "password": password})
+        assert response.status_code == 200, response.text
+        return {"Authorization": f"Bearer {response.json()['access_token']}"}
+
+    return do_login
 
 
 @pytest.fixture

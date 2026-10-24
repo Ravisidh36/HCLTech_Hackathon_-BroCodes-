@@ -28,6 +28,11 @@ def get_db() -> Iterator[Session]:
         db.close()
 
 
+def get_session_factory() -> sessionmaker[Session]:
+    """Dependency for code that needs its own transaction (e.g. the audit writer). Overridable in tests."""
+    return SessionLocal
+
+
 def check_db() -> bool:
     try:
         with engine.connect() as conn:

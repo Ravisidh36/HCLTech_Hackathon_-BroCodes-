@@ -35,6 +35,7 @@ class Settings(BaseSettings):
     # Models (already cached locally; offline mode avoids slow network checks)
     hf_home: str = "D:/cache/huggingface"
     hf_offline: bool = True
+    warm_models: bool = True  # load BGE-M3, reranker and Docling at API startup
     embedding_model: str = "BAAI/bge-m3"
     rerank_model: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 
