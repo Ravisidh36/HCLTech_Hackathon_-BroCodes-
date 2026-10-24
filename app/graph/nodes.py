@@ -6,6 +6,7 @@ answer classification are all code.
 
 import json
 import logging
+import re
 import time
 from collections.abc import Callable
 from functools import wraps
@@ -83,10 +84,25 @@ def _found(text: str, words: list[str]) -> str | None:
     return next((w for w in words if w in text), None)
 
 
-def keyword_route(question: str) -> SupervisorPlan:
+_SLOT_CHOICE_RE = re.compile(
+    r"\b(first|second|third|fourth|fifth|last|1st|2nd|3rd|option \d|monday|tuesday|wednesday|thursday|friday|"
+    r"saturday|sunday|\d{1,2}[:.]\d{2}|\d{1,2}\s*(am|pm))\b"
+)
+_PERSONAL_RE = re.compile(r"\b(am i|i am|i'm|my|me)\b")
+
+
+def keyword_route(question: str, history: list[dict[str, str]] | None = None) -> SupervisorPlan:
     """Deterministic fallback when the planner LLM is unavailable or returns nothing usable."""
     q = question.lower()
     procedure = _found(q, _PROCEDURES)
+
+    # A slot choice that follows a reschedule request continues that reschedule.
+    recent_user = [t["content"].lower() for t in (history or []) if t["speaker"] == "user"][-2:]
+    if _SLOT_CHOICE_RE.search(q) and any("reschedul" in t for t in recent_user):
+        department = next((d for t in reversed(recent_user) if (d := _found(t, _DEPARTMENTS))), None)
+        return SupervisorPlan(
+            tasks=[Task(specialist="appointments", action="reschedule", department=department, slot_preference=question)]
+        )
     if any(w in q for w in ("surgery", "operation", "pre-op", "preop", "pre-operative")) and any(
         w in q for w in ("proceed", "ready", "pending", "go ahead", "cleared")
     ):
@@ -96,7 +112,8 @@ def keyword_route(question: str) -> SupervisorPlan:
         return SupervisorPlan(tasks=[Task(specialist="appointments", action="reschedule", department=department)])
     if "appointment" in q:
         return SupervisorPlan(tasks=[Task(specialist="appointments", action="view", department=_found(q, _DEPARTMENTS))])
-    if any(w in q for w in ("covered", "coverage", "eligible", "pre-auth", "preauth")):
+    # Personal coverage questions go to the eligibility tool; general insurance terms are policy questions.
+    if _PERSONAL_RE.search(q) and any(w in q for w in ("covered", "coverage", "eligible", "pre-auth", "preauth")):
         return SupervisorPlan(tasks=[Task(specialist="insurance", procedure=procedure)])
     if any(w in q for w in ("cost", "bill", "price", "estimate", "how much will")):
         return SupervisorPlan(tasks=[Task(specialist="billing", procedure=procedure)])
@@ -130,7 +147,7 @@ def _plan(state: GraphState) -> tuple[SupervisorPlan, list[dict[str, Any]], str 
         return out["parsed"], _usage("supervisor", out["raw"]), None
     except Exception as exc:  # LLM down, quota, malformed output: never block the patient
         log.warning("Supervisor fell back to keyword routing: %s", exc)
-        return keyword_route(state["question"]), [], f"supervisor_fallback: {type(exc).__name__}"
+        return keyword_route(state["question"], state.get("history")), [], f"supervisor_fallback: {type(exc).__name__}"
 
 
 @timed("supervisor")
@@ -321,6 +338,9 @@ def _citations(state: GraphState, answer_type: AnswerType) -> list[DocCitation |
     by_label = {f"E{i}": e for i, e in enumerate(evidence, start=1)}
     auto = set(state.get("auto_cite", []))
     cited = [by_label[label] for label in state.get("cited_labels", [])] + [e for e in evidence if e.chunk_id in auto]
+    if answer_type == AnswerType.CONFLICT_FLAGGED:
+        # Every side of a conflict is cited, whatever the composer chose.
+        cited += evidence
     citations: list[DocCitation | SystemCitation] = []
     seen: set[tuple] = set()
     for e in cited:

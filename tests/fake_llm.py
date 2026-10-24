@@ -12,8 +12,18 @@ def question_from(prompt: str) -> str:
     return re.search(r"Patient's message:\n(.*?)\n\nCompleted", prompt, re.DOTALL).group(1).strip()
 
 
+def history_from(prompt: str) -> list[dict[str, str]]:
+    block = re.search(r"Recent conversation:\n(.*?)\n\nPatient's message", prompt, re.DOTALL).group(1)
+    turns = []
+    for line in block.splitlines():
+        speaker, _, content = line.partition(": ")
+        if speaker in ("user", "assistant"):
+            turns.append({"speaker": speaker, "content": content})
+    return turns
+
+
 def plan_by_keywords(prompt: str) -> SupervisorPlan:
-    return keyword_route(question_from(prompt))
+    return keyword_route(question_from(prompt), history_from(prompt))
 
 
 def quote_evidence_or_summarise(prompt: str) -> ComposerOutput:

@@ -28,7 +28,23 @@ def test_keyword_route(question, specialist):
 def test_keyword_route_extracts_arguments():
     task = keyword_route("Reschedule my cardiology appointment").tasks[0]
     assert (task.action, task.department) == ("reschedule", "cardiology")
-    assert keyword_route("Is knee replacement covered?").tasks[0].procedure == "knee replacement"
+    assert keyword_route("Is my knee replacement covered?").tasks[0].procedure == "knee replacement"
+
+
+def test_general_insurance_terms_are_policy_questions():
+    assert keyword_route("How long is an approved pre-authorisation valid?").tasks[0].specialist == "knowledge"
+
+
+def test_slot_choice_continues_a_reschedule():
+    history = [
+        {"speaker": "user", "content": "Reschedule my cardiology appointment"},
+        {"speaker": "assistant", "content": "Which of these available times would you like?"},
+    ]
+    task = keyword_route("The first one please", history).tasks[0]
+    assert (task.specialist, task.action, task.department, task.slot_preference) == (
+        "appointments", "reschedule", "cardiology", "The first one please",
+    )
+    assert keyword_route("The first one please").tasks[0].specialist == "knowledge"  # no context, no guess
 
 
 OPTIONS = [

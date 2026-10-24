@@ -129,9 +129,11 @@ def test_malicious_document_metadata_comes_from_form_not_text(db):
     stored = db.scalars(select(Document).where(Document.doc_id == "FAQ-BILLING")).one()
     assert (stored.version, stored.authority) == ("1.0", "department_sop")  # not "99" / "regulatory"
 
+    # Flagged chunks are quarantined: never retrieved. The rest of the document stays answerable.
     evidence = retrieve(db, "Are all surgeries fully covered by insurance?").evidence
-    flagged = [e for e in evidence if e.doc_id == "FAQ-BILLING" and "IGNORE ALL PREVIOUS" in e.content]
-    assert all(e.injection_flag for e in flagged)
+    assert not any("IGNORE ALL PREVIOUS" in e.content or e.injection_flag for e in evidence)
+    refunds = retrieve(db, "How long do refunds for cancelled procedures take?").evidence
+    assert any(e.doc_id == "FAQ-BILLING" and "7 working days" in e.content for e in refunds)
 
 
 def test_failed_ingest_leaves_no_rows(test_engine, monkeypatch):

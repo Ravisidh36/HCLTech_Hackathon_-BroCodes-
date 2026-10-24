@@ -1,0 +1,20 @@
+{"query": "What are the visiting hours for ICU patients?", "relevant": ["POL-ICU-VISIT"]}
+{"query": "How many visitors are allowed in intensive care?", "relevant": ["POL-ICU-VISIT"]}
+{"query": "Can children visit the ICU?", "relevant": ["POL-ICU-VISIT"]}
+{"query": "What are general ward visiting hours?", "relevant": ["ADV-RESP-2026"]}
+{"query": "Do visitors need to wear masks in the wards?", "relevant": ["ADV-RESP-2026"]}
+{"query": "How do I book an MRI?", "relevant": ["SOP-RAD-MRI"]}
+{"query": "What should I remove before an MRI scan?", "relevant": ["SOP-RAD-MRI"]}
+{"query": "Which tests are required before knee replacement?", "relevant": ["PROT-ORTHO-KNEE"]}
+{"query": "Is HbA1c needed before knee surgery?", "relevant": ["PROT-ORTHO-KNEE"]}
+{"query": "When should I arrive on the day of surgery?", "relevant": ["PROT-ORTHO-KNEE"]}
+{"query": "What do I need to bring for admission?", "relevant": ["POL-ADM"]}
+{"query": "Do insured patients pay an admission deposit?", "relevant": ["POL-ADM"]}
+{"query": "What is in the discharge summary?", "relevant": ["POL-DIS"]}
+{"query": "When are discharges processed?", "relevant": ["POL-DIS"]}
+{"query": "Is knee replacement covered under CarePlus Basic?", "relevant": ["INS-AGR-CAREPLUS"]}
+{"query": "How long does pre-authorisation take?", "relevant": ["INS-AGR-CAREPLUS"]}
+{"query": "Is the emergency department open at night?", "relevant": ["SOP-ER"]}
+{"query": "How are emergency patients prioritised?", "relevant": ["SOP-ER"]}
+{"query": "When is the pharmacy open?", "relevant": ["POL-PHARM-OPD", "POL-PHARM-SVC"]}
+{"query": "Can prescriptions be delivered to my home?", "relevant": ["POL-PHARM-SVC"]}

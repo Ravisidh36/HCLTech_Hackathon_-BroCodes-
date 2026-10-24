@@ -112,8 +112,8 @@ function TopicRows({ topic, docs }: { topic: string; docs: DocumentOut[] }) {
           <td>
             <span className={`pill pill-${d.status}`}>{d.status}</span>
             {d.injection_flags > 0 && (
-              <span className="pill pill-warn" title="Instruction-like text detected. Treated as data only.">
-                ⚠ {d.injection_flags} flagged
+              <span className="pill pill-warn" title="Instruction-like text detected. Flagged chunks are quarantined from answers.">
+                ⚠ {d.injection_flags} quarantined
               </span>
             )}
           </td>
@@ -217,7 +217,7 @@ function UploadForm({ onUploaded }: { onUploaded: () => Promise<void> }) {
           {result.status === 'indexed' && <span> · {result.chunks} chunks</span>}
           {result.superseded.length > 0 && <span> · superseded v{result.superseded.join(', v')}</span>}
           {result.injection_flags > 0 && (
-            <div>⚠ {result.injection_flags} chunk(s) contain instruction-like text. They are stored as data only.</div>
+            <div>⚠ {result.injection_flags} chunk(s) contain instruction-like text and are quarantined: they are never used in answers.</div>
           )}
           <div className="mono small muted">Trace {result.trace_id}</div>
         </div>

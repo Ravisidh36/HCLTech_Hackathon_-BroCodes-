@@ -56,8 +56,15 @@ def _effective_filter(as_of: date):
     return (Document.status == DocStatus.ACTIVE.value) & (Document.effective_date <= as_of)
 
 
+# R8 quarantine: chunks flagged as instruction-like at upload are never retrieved, so their text can
+# reach neither the model nor the patient (including the deterministic fallback, which quotes evidence).
+_NOT_QUARANTINED = Chunk.injection_flag.is_(False)
+
+
 def _dense(db: Session, query: str, as_of: date, limit: int) -> list[str]:
-    rows = db.execute(select(Chunk.id, Chunk.embedding).join(Document).where(_effective_filter(as_of))).all()
+    rows = db.execute(
+        select(Chunk.id, Chunk.embedding).join(Document).where(_effective_filter(as_of), _NOT_QUARANTINED)
+    ).all()
     if not rows:
         return []
     matrix = np.asarray([r.embedding for r in rows], dtype=np.float32)
@@ -73,7 +80,7 @@ def _keyword(db: Session, query: str, as_of: date, limit: int) -> list[str]:
     stmt = (
         select(Chunk.id)
         .join(Document)
-        .where(_effective_filter(as_of), Chunk.tsv.op("@@")(tsq))
+        .where(_effective_filter(as_of), _NOT_QUARANTINED, Chunk.tsv.op("@@")(tsq))
         .order_by(rank.desc())
         .limit(limit)
     )
@@ -96,7 +103,9 @@ def _passage(c: Candidate) -> str:
 
 def _best_chunks(db: Session, query: str, docs: list[Document], per_doc: int = 2) -> list[Candidate]:
     """Pull in the most relevant chunks of governing documents that retrieval did not surface."""
-    rows = db.execute(select(Chunk, Document).join(Document).where(Document.id.in_([d.id for d in docs]))).tuples().all()
+    rows = db.execute(
+        select(Chunk, Document).join(Document).where(Document.id.in_([d.id for d in docs]), _NOT_QUARANTINED)
+    ).tuples().all()
     candidates = [Candidate(chunk, doc) for chunk, doc in rows]
     for c, s in zip(candidates, rerank_scores(query, [_passage(c) for c in candidates])):
         c.score = s
