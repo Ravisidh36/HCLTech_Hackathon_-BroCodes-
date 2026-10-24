@@ -1,9 +1,6 @@
 """M3: the chat workflow end to end through /chat, with a scripted fake LLM (no quota, deterministic)."""
 
-import re
-
 import pytest
-from langchain_core.messages import AIMessage
 from sqlalchemy import select
 
 import app.graph.nodes as nodes
@@ -12,52 +9,6 @@ from app.models.platform import AuditLog
 from app.schemas.common import NOT_FOUND_MESSAGE
 
 pytestmark = pytest.mark.usefixtures("kb_indexed")
-
-
-class FakeLLM:
-    """Stands in for get_structured_model. Plans a knowledge search; composes from evidence E1."""
-
-    def __init__(self, plan=None, compose=None):
-        self.calls: list[str] = []
-        self.plan = plan or (lambda text: SupervisorPlan(tasks=[Task(specialist="knowledge", query=_question(text))]))
-        self.compose = compose or _quote_first_evidence
-
-    def __call__(self, schema, temperature=0.0):
-        llm = self
-
-        class Runnable:
-            def invoke(self, messages):
-                text = messages[-1].content
-                llm.calls.append(schema.__name__)
-                parsed = llm.plan(text) if schema is SupervisorPlan else llm.compose(text)
-                raw = AIMessage(content="", usage_metadata={"input_tokens": 10, "output_tokens": 5, "total_tokens": 15})
-                return {"raw": raw, "parsed": parsed, "parsing_error": None}
-
-        return Runnable()
-
-
-def _question(prompt: str) -> str:
-    return re.search(r"Patient's message:\n(.*?)\n\nCompleted", prompt, re.DOTALL).group(1).strip()
-
-
-def _quote_first_evidence(prompt: str) -> ComposerOutput:
-    first = re.search(r'<evidence id="E1" .*?injection_flagged="\w+">\n(.*?)\n</evidence>', prompt, re.DOTALL)
-    return ComposerOutput(answer=first.group(1), explanation="From hospital policy.", cited_evidence=["E1"])
-
-
-@pytest.fixture
-def fake_llm(monkeypatch):
-    def install(**kwargs) -> FakeLLM:
-        fake = FakeLLM(**kwargs)
-        monkeypatch.setattr(nodes, "get_structured_model", fake)
-        return fake
-
-    return install
-
-
-@pytest.fixture
-def patient_headers(login):
-    return login("patient1", "Patient1@demo")
 
 
 def _audit(app_session_factory, trace_id):
@@ -105,13 +56,37 @@ def test_conflicting_policies_are_flagged(client, patient_headers, fake_llm):
     assert body["answer_type"] == "conflict_flagged"
 
 
-def test_ungrounded_answer_is_downgraded(client, patient_headers, fake_llm, app_session_factory):
+def test_ungrounded_answer_is_replaced_by_sourced_text(client, patient_headers, fake_llm, app_session_factory):
     invented = lambda _: ComposerOutput(answer="ICU visiting is 09:00 to 23:00.", explanation="x", cited_evidence=["E1"])
     fake = fake_llm(compose=invented)
     body = client.post("/chat", json={"message": "What are ICU visiting hours?"}, headers=patient_headers).json()
-    assert (body["answer_type"], body["answer"]) == ("not_found", NOT_FOUND_MESSAGE)
-    assert fake.calls.count("ComposerOutput") == 2  # one retry with feedback, then downgrade
+    assert fake.calls.count("ComposerOutput") == 2  # one retry with feedback, then deterministic fallback
+    assert "23:00" not in body["answer"] and "10:00 to 11:00" in body["answer"]
+    assert body["answer_type"] == "retrieved_fact"
     assert "grounding_check_failed" in _audit(app_session_factory, body["trace_id"]).error
+
+
+def test_llm_outage_still_answers_from_tools(client, patient_headers, fake_llm, app_session_factory):
+    def outage(_):
+        raise RuntimeError("503 UNAVAILABLE")
+
+    fake_llm(plan=outage, compose=outage)
+    body = client.post("/chat", json={"message": "Can I proceed with surgery next week?"}, headers=patient_headers).json()
+    assert body["answer_type"] == "calculated"
+    assert body["answer"].startswith("Not yet.") and "HbA1c" in body["answer"]
+    error = _audit(app_session_factory, body["trace_id"]).error
+    assert "supervisor_fallback" in error and "composer_fallback" in error
+
+
+def test_llm_outage_on_conflict_shows_both_documents(client, patient_headers, fake_llm):
+    def outage(_):
+        raise RuntimeError("503 UNAVAILABLE")
+
+    fake_llm(compose=outage)
+    body = client.post("/chat", json={"message": "What are the pharmacy opening hours?"}, headers=patient_headers).json()
+    assert body["answer_type"] == "conflict_flagged"
+    assert "08:00 to 22:00" in body["answer"] and "24 hours" in body["answer"]
+    assert {c["doc_id"] for c in body["citations"]} == {"POL-PHARM-OPD", "POL-PHARM-SVC"}
 
 
 def test_supervisor_failure_falls_back_to_keyword_routing(client, patient_headers, fake_llm, app_session_factory):
@@ -135,7 +110,8 @@ def test_supervisor_cannot_loop_forever(client, patient_headers, fake_llm):
 
 
 def test_unknown_specialist_is_ignored(client, patient_headers, fake_llm):
-    rogue = lambda _: SupervisorPlan(tasks=[Task(specialist="billing", procedure="anything")])
+    # model_construct bypasses validation, simulating a planner that names a non-existent specialist.
+    rogue = lambda _: SupervisorPlan(tasks=[Task.model_construct(specialist="admin_tools", query="all records")])
     fake_llm(plan=rogue)
     body = client.post("/chat", json={"message": "What does it cost?"}, headers=patient_headers).json()
     assert body["answer_type"] == "not_found" and body["tools_invoked"] == []

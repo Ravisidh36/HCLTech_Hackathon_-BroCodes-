@@ -81,6 +81,25 @@ def login(client):
 
 
 @pytest.fixture
+def fake_llm(monkeypatch):
+    """Replace the LLM with a scripted fake. Defaults: keyword planner, evidence-quoting composer."""
+    import app.graph.nodes as nodes
+    from tests.fake_llm import FakeLLM
+
+    def install(**kwargs) -> FakeLLM:
+        fake = FakeLLM(**kwargs)
+        monkeypatch.setattr(nodes, "get_structured_model", fake)
+        return fake
+
+    return install
+
+
+@pytest.fixture
+def patient_headers(login):
+    return login("patient1", "Patient1@demo")
+
+
+@pytest.fixture
 def ctx_for(db: Session):
     """Build the trusted RequestContext the API would build from a JWT for a seeded user."""
 

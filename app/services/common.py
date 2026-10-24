@@ -36,7 +36,8 @@ def today() -> date:
 
 
 def local_iso(dt: datetime) -> str:
-    return dt.astimezone(hospital_tz()).isoformat(timespec="minutes")
+    """Hospital-local 'YYYY-MM-DD HH:MM': readable for patients, still parseable by fromisoformat."""
+    return dt.astimezone(hospital_tz()).strftime("%Y-%m-%d %H:%M")
 
 
 def normalize(text: str) -> str:

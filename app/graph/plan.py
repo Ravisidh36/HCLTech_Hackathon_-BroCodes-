@@ -4,6 +4,7 @@ Task arguments are explicit typed fields, never a free-form dict, so the planner
 parameters. There is deliberately no patient id field anywhere: identity comes only from ctx (R7).
 """
 
+import json
 from typing import Literal
 
 from pydantic import BaseModel, Field
@@ -21,11 +22,16 @@ class Task(BaseModel):
     department: str | None = Field(None, description="appointments: department, e.g. Cardiology")
     action: Literal["view", "reschedule"] | None = Field(None, description="appointments: view or reschedule")
     appointment_id: int | None = Field(None, description="appointments: id from an earlier result, if known")
-    slot_id: int | None = Field(None, description="appointments: chosen slot id from an earlier result")
+    slot_preference: str | None = Field(
+        None,
+        description="appointments: the patient's own words for the new slot they chose, e.g. 'the second one' "
+        "or 'Tuesday 11:30'. Copy their words; do not invent ids.",
+    )
     medications: list[str] | None = Field(None, description="medication: medicines the patient asks about")
 
-    def key(self) -> tuple:
-        return tuple(self.model_dump(exclude_none=True).items())
+    def key(self) -> str:
+        """Canonical identity of a task, used to stop the planner repeating work."""
+        return json.dumps(self.model_dump(exclude_none=True), sort_keys=True)
 
 
 class SupervisorPlan(BaseModel):

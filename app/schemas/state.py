@@ -37,6 +37,9 @@ class GraphState(TypedDict, total=False):
     status_summaries: Annotated[list[str], operator.add]
     pending_action_id: str | None
     conflict: bool
+    care_task: Any  # app.graph.plan.Task for the parallel Care Coordination branches
+    care_done: bool
+    auto_cite: Annotated[list[str], operator.add]  # chunk ids always cited (e.g. readiness protocol)
 
     # Output
     draft_answer: str

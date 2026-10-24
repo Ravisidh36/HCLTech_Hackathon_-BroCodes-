@@ -16,8 +16,9 @@ from langchain_core.runnables import RunnableConfig
 from sqlalchemy.orm import Session
 
 from app.graph import prompts
+from app.graph.fallback import render_fallback
 from app.graph.plan import ComposerOutput, SupervisorPlan, Task
-from app.graph.specialists import REGISTRY, run_task
+from app.graph.specialists import CARE_COORDINATION, REGISTRY, run_task
 from app.llm.provider import get_structured_model
 from app.safety.classifier import KNOWLEDGE_TOOL, classify
 from app.safety.grounding import unsupported_numbers
@@ -74,8 +75,35 @@ def guard_node(state: GraphState, config: RunnableConfig) -> dict[str, Any]:
 
 # --- supervisor -----------------------------------------------------------------------------
 
+_DEPARTMENTS = ["cardiology", "orthopedics", "orthopaedics", "radiology"]
+_PROCEDURES = ["knee replacement", "mri scan", "mri", "cardiology consultation", "cataract surgery"]
+
+
+def _found(text: str, words: list[str]) -> str | None:
+    return next((w for w in words if w in text), None)
+
+
 def keyword_route(question: str) -> SupervisorPlan:
     """Deterministic fallback when the planner LLM is unavailable or returns nothing usable."""
+    q = question.lower()
+    procedure = _found(q, _PROCEDURES)
+    if any(w in q for w in ("surgery", "operation", "pre-op", "preop", "pre-operative")) and any(
+        w in q for w in ("proceed", "ready", "pending", "go ahead", "cleared")
+    ):
+        return SupervisorPlan(tasks=[Task(specialist=CARE_COORDINATION, procedure=procedure)])
+    if any(w in q for w in ("reschedul", "move my", "change my appointment")):
+        department = _found(q, _DEPARTMENTS)
+        return SupervisorPlan(tasks=[Task(specialist="appointments", action="reschedule", department=department)])
+    if "appointment" in q:
+        return SupervisorPlan(tasks=[Task(specialist="appointments", action="view", department=_found(q, _DEPARTMENTS))])
+    if any(w in q for w in ("covered", "coverage", "eligible", "pre-auth", "preauth")):
+        return SupervisorPlan(tasks=[Task(specialist="insurance", procedure=procedure)])
+    if any(w in q for w in ("cost", "bill", "price", "estimate", "how much will")):
+        return SupervisorPlan(tasks=[Task(specialist="billing", procedure=procedure)])
+    if any(w in q for w in ("interact", "together with", "medicine", "medication")):
+        return SupervisorPlan(tasks=[Task(specialist="medication")])
+    if any(w in q for w in ("result", "reading", "level", "lab ", "hba1c", "glucose", "haemoglobin", "hemoglobin")):
+        return SupervisorPlan(tasks=[Task(specialist="labs", test=question)])
     return SupervisorPlan(tasks=[Task(specialist="knowledge", query=question)])
 
 
@@ -131,14 +159,19 @@ def supervisor_node(state: GraphState, config: RunnableConfig) -> dict[str, Any]
 @timed("specialists")
 def specialists_node(state: GraphState, config: RunnableConfig) -> dict[str, Any]:
     db, ctx = _db(config), state["ctx"]
-    outputs = [run_task(db, ctx, task, state["question"]) for task in state["plan"]]
+    care = next((t for t in state["plan"] if t.specialist == CARE_COORDINATION), None)
+    direct = [t for t in state["plan"] if t.specialist != CARE_COORDINATION]
+    outputs = [run_task(db, ctx, task, state["question"]) for task in direct]
 
     update: dict[str, Any] = {
-        "completed_tasks": list(state["plan"]),
+        "completed_tasks": direct,
         "results": [r for o in outputs for r in o.results],
         "evidence": [e for o in outputs for e in o.evidence],
         "status_summaries": [o.summary for o in outputs],
     }
+    if care is not None and not state.get("care_done"):
+        # Runs next as parallel branches; the readiness join decides whether the loop ends.
+        update["care_task"] = care
     if any(o.conflict for o in outputs):
         update["conflict"] = True
     pending = next((o.pending_action_id for o in outputs if o.pending_action_id), None)
@@ -150,7 +183,7 @@ def specialists_node(state: GraphState, config: RunnableConfig) -> dict[str, Any
         update |= {"stop_reason": "clarification", "clarification_question": clarification}
     elif update.get("conflict"):
         update["stop_reason"] = "conflict"
-    elif state.get("final_step", True):
+    elif state.get("final_step", True) and "care_task" not in update:
         update["stop_reason"] = "done"
     return update
 
@@ -187,6 +220,24 @@ def _system_data(state: GraphState) -> list[dict[str, Any]]:
     ]
 
 
+def _fallback_or_not_found(state: GraphState, reason: str, usage: list[dict[str, Any]]) -> dict[str, Any]:
+    """LLM unavailable or ungrounded: answer deterministically from tool data / quoted evidence."""
+    text = render_fallback(state)
+    if text is None:
+        return _not_found(state, "The answer could not be generated safely.") | {"token_usage": usage, "errors": [reason]}
+    evidence = state.get("evidence", [])
+    cited = [f"E{i}" for i in range(1, len(evidence) + 1)] if state.get("conflict") else (["E1"] if evidence else [])
+    return {
+        "draft_answer": text,
+        "explanation": "Generated directly from hospital system data and documents (language model unavailable).",
+        "assumptions": [],
+        "cited_labels": cited,
+        "grounding_ok": True,
+        "token_usage": usage,
+        "errors": [reason, "composer_fallback"],
+    }
+
+
 def _not_found(state: GraphState, explanation: str) -> dict[str, Any]:
     messages = [r.message for r in state.get("results", []) if r.status == ToolStatus.NOT_FOUND and r.message]
     detail = " ".join(m for m in messages if m != NOT_FOUND_MESSAGE)
@@ -219,6 +270,11 @@ def composer_node(state: GraphState, config: RunnableConfig) -> dict[str, Any]:
     )
     if stop == "clarification":
         user += f"\n\nAsk the patient this clarifying question: {state['clarification_question']}"
+    if stop == "pending_action":
+        user += (
+            "\n\nA change has been PROPOSED but NOT made. Describe the proposed change and ask the patient "
+            "to confirm it with the Confirm button. Do not say it has been done."
+        )
     support = "\n".join([state["question"], _evidence_block(state), tool_json])
 
     usage: list[dict[str, Any]] = []
@@ -228,8 +284,8 @@ def composer_node(state: GraphState, config: RunnableConfig) -> dict[str, Any]:
         try:
             out = get_structured_model(ComposerOutput).invoke(messages)
         except Exception as exc:
-            log.warning("Composer failed: %s", exc)
-            return _not_found(state, "The answer could not be generated safely.") | {"errors": [f"composer: {type(exc).__name__}"]}
+            log.warning("Composer failed, using deterministic fallback: %s", exc)
+            return _fallback_or_not_found(state, f"composer: {type(exc).__name__}", usage)
         usage += _usage("composer", out["raw"])
         parsed: ComposerOutput | None = out["parsed"]
         if parsed is None:
@@ -253,10 +309,7 @@ def composer_node(state: GraphState, config: RunnableConfig) -> dict[str, Any]:
             f"\n\nYour previous answer contained values not present in the sources: {unsupported}. "
             "Rewrite it using only values that appear in the sources."
         )
-    return _not_found(state, "The drafted answer could not be verified against the sources.") | {
-        "token_usage": usage,
-        "errors": ["grounding_check_failed"],
-    }
+    return _fallback_or_not_found(state, "grounding_check_failed", usage)
 
 
 # --- finalize -------------------------------------------------------------------------------
@@ -266,10 +319,12 @@ def _citations(state: GraphState, answer_type: AnswerType) -> list[DocCitation |
         return []
     evidence = state.get("evidence", [])
     by_label = {f"E{i}": e for i, e in enumerate(evidence, start=1)}
+    auto = set(state.get("auto_cite", []))
+    cited = [by_label[label] for label in state.get("cited_labels", [])] + [e for e in evidence if e.chunk_id in auto]
     citations: list[DocCitation | SystemCitation] = []
     seen: set[tuple] = set()
-    for label in state.get("cited_labels", []):
-        c = by_label[label].citation
+    for e in cited:
+        c = e.citation
         key = (c.doc_id, c.version, c.section)
         if key not in seen:
             seen.add(key)
@@ -299,4 +354,10 @@ def route_after_supervisor(state: GraphState) -> str:
 
 
 def route_after_specialists(state: GraphState) -> str:
+    if state.get("care_task") is not None and not state.get("care_done"):
+        return "care_fanout"
+    return "composer" if state.get("stop_reason") else "supervisor"
+
+
+def route_after_readiness(state: GraphState) -> str:
     return "composer" if state.get("stop_reason") else "supervisor"

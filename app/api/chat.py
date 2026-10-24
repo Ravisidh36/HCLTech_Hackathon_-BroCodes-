@@ -44,7 +44,10 @@ def chat(
     try:
         state = get_graph().invoke(
             {"question": body.message, "ctx": ctx, "history": recent_turns(db, session_id, ctx.user_id)},
-            config={"configurable": {"db": db}, "recursion_limit": 4 * MAX_STEPS + 10},
+            config={
+                "configurable": {"db": db, "session_factory": session_factory},
+                "recursion_limit": 6 * MAX_STEPS + 10,
+            },
         )
         pending = None
         if state.get("pending_action_id"):
