@@ -6,17 +6,12 @@ from app.schemas.common import AnswerType, RequestContext
 from app.schemas.tools import ToolResult
 
 
-class PlannedTask(TypedDict):
-    specialist: str
-    args: dict[str, Any]
-
-
 class GraphState(TypedDict, total=False):
     """
     State for one chat request through the LangGraph workflow.
 
-    List fields that parallel branches (Care Coordination) write to use
-    operator.add so concurrent updates are merged instead of overwritten.
+    List fields that several nodes (or parallel Care Coordination branches) append to use
+    operator.add so updates are merged instead of overwritten.
     """
 
     # Input
@@ -25,12 +20,13 @@ class GraphState(TypedDict, total=False):
     history: list[dict[str, str]]
 
     # Guard
-    guard_verdict: str  # "allowed" | "refused"
+    guard_category: str
     guard_reason: str
 
-    # Supervisor loop
-    plan: list[PlannedTask]
-    completed_tasks: Annotated[list[PlannedTask], operator.add]
+    # Supervisor loop (plan holds app.graph.plan.Task objects)
+    plan: list[Any]
+    final_step: bool
+    completed_tasks: Annotated[list[Any], operator.add]
     step_count: int
     stop_reason: str
     clarification_question: str
@@ -46,7 +42,11 @@ class GraphState(TypedDict, total=False):
     draft_answer: str
     explanation: str
     assumptions: list[str]
+    cited_labels: list[str]
+    grounding_ok: bool
+    answer: str
     answer_type: AnswerType
+    citations: list[Any]
 
     # Observability
     node_timings: Annotated[list[dict[str, Any]], operator.add]

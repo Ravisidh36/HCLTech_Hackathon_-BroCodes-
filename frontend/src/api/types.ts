@@ -43,6 +43,7 @@ export interface PendingAction {
 
 export interface ChatResponse {
   trace_id: string
+  session_id: string
   answer: string
   answer_type: AnswerType
   citations: Citation[]

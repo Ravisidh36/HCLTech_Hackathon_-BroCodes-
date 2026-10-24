@@ -37,6 +37,8 @@ def _gemini(temperature: float) -> BaseChatModel | None:
         model=settings.gemini_model,
         google_api_key=settings.gemini_api_key,
         temperature=temperature,
+        # Planner and composer work from structured evidence; extended thinking only adds latency.
+        thinking_budget=0,
         max_retries=1,
         timeout=30,
     )
@@ -52,6 +54,20 @@ def model_label() -> str:
     keys = {"groq": settings.groq_api_key, "gemini": settings.gemini_api_key}
     other = "gemini" if settings.llm_provider == "groq" else "groq"
     return labels[settings.llm_provider] if keys[settings.llm_provider] else labels[other]
+
+
+def get_structured_model(schema: type, temperature: float = 0.0) -> Runnable:
+    """Model that returns {"raw": AIMessage, "parsed": schema | None, "parsing_error": ...}.
+
+    include_raw keeps token usage available for the audit log.
+    """
+    settings = get_settings()
+    order = [settings.llm_provider, "gemini" if settings.llm_provider == "groq" else "groq"]
+    models = [m for m in (_BUILDERS[name](temperature) for name in order) if m is not None]
+    if not models:
+        raise RuntimeError("No LLM API key configured. Set GROQ_API_KEY or GEMINI_API_KEY in .env.")
+    runnables = [m.with_structured_output(schema, include_raw=True) for m in models]
+    return runnables[0].with_fallbacks(runnables[1:]) if len(runnables) > 1 else runnables[0]
 
 
 def get_chat_model(temperature: float = 0.0) -> Runnable:

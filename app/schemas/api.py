@@ -41,6 +41,7 @@ class ChatResponse(BaseModel):
     """Response contract, extending the §8 example."""
 
     trace_id: str
+    session_id: str
     answer: str
     answer_type: AnswerType
     citations: list[Citation] = []
