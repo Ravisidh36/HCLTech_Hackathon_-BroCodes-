@@ -75,4 +75,70 @@ export interface ChatRequest {
 export interface ConfirmRequest {
   action_id: string
   decision: 'confirm' | 'cancel'
+  session_id?: string
+}
+
+export interface MeResponse {
+  username: string
+  full_name: string
+  role: Role
+  patient_id: string | null
+}
+
+export type Authority = 'regulatory' | 'clinical_guideline' | 'hospital_policy' | 'department_sop'
+export type DocStatus = 'active' | 'superseded' | 'draft'
+
+export interface DocumentOut {
+  doc_id: string
+  title: string
+  topic: string
+  version: string
+  effective_date: string
+  authority: Authority
+  status: DocStatus
+  chunk_count: number
+  injection_flags: number
+  uploaded_by: string
+  uploaded_at: string
+  source_filename: string
+}
+
+export interface IngestResponse {
+  status: 'indexed' | 'duplicate'
+  doc_id: string
+  version: string
+  chunks: number
+  injection_flags: number
+  superseded: string[]
+  message: string
+  trace_id: string
+}
+
+export interface PrivacyCheck {
+  check: string
+  passed: boolean
+}
+
+export interface NodeTiming {
+  node: string
+  ms: number
+}
+
+export interface AuditOut {
+  trace_id: string
+  endpoint: string
+  created_at: string
+  user_id: number | null
+  role: Role | null
+  patient_id: string | null
+  question_redacted: string | null
+  answer_type: AnswerType | null
+  sources: Array<Record<string, unknown>>
+  tools: Array<Record<string, unknown>>
+  privacy_checks: PrivacyCheck[]
+  node_timings: NodeTiming[]
+  model: string | null
+  token_usage: Array<Record<string, unknown>>
+  latency_ms: number | null
+  error: string | null
 }

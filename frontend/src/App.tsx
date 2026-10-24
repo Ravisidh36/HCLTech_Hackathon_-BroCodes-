@@ -1,35 +1,44 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { AuthProvider, useAuth } from './auth'
+import { AdminConsole } from './pages/AdminConsole'
+import { Login } from './pages/Login'
+import { PatientChat } from './pages/PatientChat'
 
-function App() {
-  const [count, setCount] = useState(0)
+function Shell() {
+  const { session, signOut } = useAuth()
+  if (!session) return <Login />
 
+  const isAdmin = session.role === 'admin'
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div className="app">
+      <header className="topbar">
+        <div className="brand">
+          <span className="brand-mark" aria-hidden>
+            +
+          </span>
+          <div>
+            <div className="brand-name">Patient Services Assistant</div>
+            <div className="brand-sub">Demo City Hospital{isAdmin ? ' · Administration' : ''}</div>
+          </div>
+        </div>
+        <div className="user">
+          <div className="user-text">
+            <div className="user-name">{session.full_name}</div>
+            <div className="muted small">{isAdmin ? 'Administrator' : `Patient ${session.patient_id}`}</div>
+          </div>
+          <button type="button" className="btn btn-small" onClick={signOut}>
+            Sign out
+          </button>
+        </div>
+      </header>
+      <main className="main">{isAdmin ? <AdminConsole /> : <PatientChat />}</main>
+    </div>
   )
 }
 
-export default App
+export default function App() {
+  return (
+    <AuthProvider>
+      <Shell />
+    </AuthProvider>
+  )
+}
