@@ -1,0 +1,38 @@
+# API
+fastapi==0.136.3
+uvicorn==0.49.0
+python-multipart
+pydantic==2.13.4
+pydantic-settings==2.14.2
+python-dotenv==1.2.2
+tzdata==2026.2
+PyJWT==2.13.0
+bcrypt==5.0.0
+slowapi
+
+# Database
+SQLAlchemy==2.0.51
+psycopg[binary]==3.3.4
+psycopg_pool==3.3.1
+
+# Orchestration / LLM
+langgraph==1.2.6
+langchain-core==1.4.8
+langchain-groq==1.1.2
+langchain-google-genai==4.2.6
+
+# RAG
+docling==2.142.1
+langchain-text-splitters==1.1.2
+langchain-huggingface==1.2.2
+sentence-transformers==5.6.0
+transformers  # left to pip so it matches docling's huggingface_hub range
+torch==2.12.1
+numpy==2.4.3
+PyYAML==6.0.3
+
+# HTTP client (tests, eval)
+httpx==0.28.1
+
+# Testing
+pytest==9.1.1

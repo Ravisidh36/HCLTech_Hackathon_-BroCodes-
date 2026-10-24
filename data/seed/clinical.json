@@ -1,0 +1,51 @@
+{
+  "_note": "days_ago is relative to seed date. preop_requirements must match data/kb/preop-knee-replacement.md §2.",
+  "lab_tests": [
+    {"code": "HBA1C", "name": "HbA1c (glycated haemoglobin)", "unit": "%", "ref_low": 4.0, "ref_high": 5.6, "aliases": ["hba1c", "a1c", "glycated hemoglobin", "glycated haemoglobin", "sugar"]},
+    {"code": "FBG", "name": "Fasting Blood Glucose", "unit": "mg/dL", "ref_low": 70, "ref_high": 99, "aliases": ["fbg", "fasting glucose", "fasting blood sugar", "blood sugar", "blood glucose", "glucose", "sugar"]},
+    {"code": "HGB", "name": "Haemoglobin", "unit": "g/dL", "ref_low": 13.5, "ref_high": 17.5, "aliases": ["hgb", "hemoglobin", "haemoglobin", "hb"]},
+    {"code": "CREAT", "name": "Serum Creatinine", "unit": "mg/dL", "ref_low": 0.7, "ref_high": 1.3, "aliases": ["creatinine", "serum creatinine", "kidney function"]},
+    {"code": "PTINR", "name": "Prothrombin Time (INR)", "unit": "INR", "ref_low": 0.8, "ref_high": 1.2, "aliases": ["inr", "pt inr", "prothrombin time", "clotting"]},
+    {"code": "ECG", "name": "Electrocardiogram", "unit": null, "ref_low": null, "ref_high": null, "aliases": ["ecg", "ekg", "electrocardiogram"]}
+  ],
+  "lab_results": [
+    {"patient_id": "P1001", "test_code": "FBG", "value": 132, "days_ago": 20},
+    {"patient_id": "P1001", "test_code": "HBA1C", "value": 7.8, "days_ago": 200},
+    {"patient_id": "P1001", "test_code": "HGB", "value": 14.1, "days_ago": 12},
+    {"patient_id": "P1001", "test_code": "CREAT", "value": 1.0, "days_ago": 12},
+    {"patient_id": "P1001", "test_code": "PTINR", "value": 1.1, "days_ago": 12},
+    {"patient_id": "P1001", "test_code": "ECG", "value_text": "Normal sinus rhythm", "days_ago": 10},
+    {"patient_id": "P1002", "test_code": "FBG", "value": 94, "days_ago": 15},
+    {"patient_id": "P1002", "test_code": "HGB", "value": 12.9, "days_ago": 15},
+    {"patient_id": "P1003", "test_code": "HBA1C", "value": 5.4, "days_ago": 30},
+    {"patient_id": "P1003", "test_code": "HGB", "value": 15.2, "days_ago": 8},
+    {"patient_id": "P1003", "test_code": "CREAT", "value": 0.9, "days_ago": 8},
+    {"patient_id": "P1003", "test_code": "PTINR", "value": 1.0, "days_ago": 8},
+    {"patient_id": "P1003", "test_code": "ECG", "value_text": "Normal sinus rhythm", "days_ago": 8}
+  ],
+  "orders": [
+    {"patient_id": "P1001", "test_code": "HBA1C", "procedure": "Knee Replacement", "reason": "Pre-operative workup: knee replacement", "ordered_by": "D201", "status": "pending", "days_ago": 5}
+  ],
+  "preop_requirements": [
+    {"procedure": "Knee Replacement", "test_code": "HGB", "valid_days": 30, "doc_id": "PROT-ORTHO-KNEE", "doc_version": "3.0", "section": "2. Required Pre-operative Tests"},
+    {"procedure": "Knee Replacement", "test_code": "CREAT", "valid_days": 30, "doc_id": "PROT-ORTHO-KNEE", "doc_version": "3.0", "section": "2. Required Pre-operative Tests"},
+    {"procedure": "Knee Replacement", "test_code": "PTINR", "valid_days": 30, "doc_id": "PROT-ORTHO-KNEE", "doc_version": "3.0", "section": "2. Required Pre-operative Tests"},
+    {"procedure": "Knee Replacement", "test_code": "ECG", "valid_days": 30, "doc_id": "PROT-ORTHO-KNEE", "doc_version": "3.0", "section": "2. Required Pre-operative Tests"},
+    {"procedure": "Knee Replacement", "test_code": "HBA1C", "valid_days": 90, "doc_id": "PROT-ORTHO-KNEE", "doc_version": "3.0", "section": "2. Required Pre-operative Tests"}
+  ],
+  "known_drugs": ["warfarin", "aspirin", "ibuprofen", "metformin", "atorvastatin", "clopidogrel", "omeprazole", "simvastatin", "clarithromycin", "paracetamol", "amlodipine"],
+  "drug_interactions": [
+    {"drug_a": "aspirin", "drug_b": "warfarin", "severity": "major", "description": "Concurrent use increases the risk of bleeding."},
+    {"drug_a": "ibuprofen", "drug_b": "warfarin", "severity": "major", "description": "NSAIDs increase anticoagulant effect and bleeding risk."},
+    {"drug_a": "clopidogrel", "drug_b": "omeprazole", "severity": "moderate", "description": "Omeprazole may reduce the antiplatelet effect of clopidogrel."},
+    {"drug_a": "clarithromycin", "drug_b": "simvastatin", "severity": "major", "description": "Raises statin levels and the risk of muscle toxicity."},
+    {"drug_a": "amlodipine", "drug_b": "simvastatin", "severity": "moderate", "description": "May increase simvastatin exposure; dose limits apply."}
+  ],
+  "medications": [
+    {"patient_id": "P1001", "drug_name": "warfarin", "dose": "5 mg once daily"},
+    {"patient_id": "P1001", "drug_name": "aspirin", "dose": "75 mg once daily"},
+    {"patient_id": "P1001", "drug_name": "metformin", "dose": "500 mg twice daily"},
+    {"patient_id": "P1002", "drug_name": "atorvastatin", "dose": "10 mg at night"},
+    {"patient_id": "P1003", "drug_name": "paracetamol", "dose": "500 mg as needed"}
+  ]
+}

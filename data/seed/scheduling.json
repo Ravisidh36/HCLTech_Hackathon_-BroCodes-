@@ -1,0 +1,26 @@
+{
+  "_note": "day = days from seed date; times are hospital local time (config.timezone). Appointments book the matching slot.",
+  "doctors": [
+    {"id": "D201", "full_name": "Dr. Kavita Rao", "department": "Orthopedics", "performs_surgery": true},
+    {"id": "D202", "full_name": "Dr. Sameer Khan", "department": "Cardiology", "performs_surgery": false},
+    {"id": "D203", "full_name": "Dr. Anita Desai", "department": "Radiology", "performs_surgery": false},
+    {"id": "D204", "full_name": "Dr. Vikram Iyer", "department": "Orthopedics", "performs_surgery": true}
+  ],
+  "slot_rules": [
+    {"doctor_id": "D202", "slot_type": "consultation", "days": [2, 3, 4, 5, 6, 9], "times": ["10:00", "11:30", "15:00"], "duration_min": 30},
+    {"doctor_id": "D201", "slot_type": "consultation", "days": [3, 5, 10], "times": ["11:00", "14:00"], "duration_min": 30},
+    {"doctor_id": "D203", "slot_type": "consultation", "days": [1, 2, 5], "times": ["09:00", "13:00", "16:00"], "duration_min": 45},
+    {"doctor_id": "D201", "slot_type": "surgery", "days": [7, 8], "times": ["09:00"], "duration_min": 180},
+    {"doctor_id": "D204", "slot_type": "surgery", "days": [9], "times": ["09:00"], "duration_min": 180}
+  ],
+  "appointments": [
+    {"patient_id": "P1001", "doctor_id": "D202", "day": 3, "time": "10:00", "department": "Cardiology", "appointment_type": "Cardiology Consultation"},
+    {"patient_id": "P1001", "doctor_id": "D201", "day": 10, "time": "11:00", "department": "Orthopedics", "appointment_type": "Post-surgery Follow-up"},
+    {"patient_id": "P1002", "doctor_id": "D202", "day": 4, "time": "11:30", "department": "Cardiology", "appointment_type": "Cardiology Consultation"},
+    {"patient_id": "P1003", "doctor_id": "D203", "day": 5, "time": "09:00", "department": "Radiology", "appointment_type": "MRI Scan"}
+  ],
+  "surgeries": [
+    {"patient_id": "P1001", "procedure": "Knee Replacement", "surgeon_id": "D201", "day": 7, "consent_signed": true},
+    {"patient_id": "P1003", "procedure": "Knee Replacement", "surgeon_id": "D204", "day": 9, "consent_signed": true}
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "_note": "Must stay consistent with data/kb/insurance-agreement-careplus.md. valid_days is relative to seed date.",
+  "coverage_rules": [
+    {"plan_id": "PLAN-GOLD", "procedure": "Knee Replacement", "covered": true, "copay_pct": 10, "preauth_required": true, "waiting_period_days": 365, "notes": "Pre-authorisation mandatory before admission."},
+    {"plan_id": "PLAN-GOLD", "procedure": "MRI Scan", "covered": true, "copay_pct": 0, "preauth_required": false, "waiting_period_days": 0, "notes": ""},
+    {"plan_id": "PLAN-GOLD", "procedure": "Cardiology Consultation", "covered": true, "copay_pct": 0, "preauth_required": false, "waiting_period_days": 0, "notes": ""},
+    {"plan_id": "PLAN-GOLD", "procedure": "Cataract Surgery", "covered": true, "copay_pct": 15, "preauth_required": true, "waiting_period_days": 730, "notes": ""},
+    {"plan_id": "PLAN-BASIC", "procedure": "Knee Replacement", "covered": false, "copay_pct": 0, "preauth_required": false, "waiting_period_days": 0, "notes": "Joint replacement is excluded under Basic."},
+    {"plan_id": "PLAN-BASIC", "procedure": "MRI Scan", "covered": true, "copay_pct": 20, "preauth_required": true, "waiting_period_days": 30, "notes": ""},
+    {"plan_id": "PLAN-BASIC", "procedure": "Cardiology Consultation", "covered": true, "copay_pct": 10, "preauth_required": false, "waiting_period_days": 0, "notes": ""},
+    {"plan_id": "PLAN-BASIC", "procedure": "Cataract Surgery", "covered": true, "copay_pct": 25, "preauth_required": true, "waiting_period_days": 730, "notes": ""}
+  ],
+  "preauthorizations": [
+    {"patient_id": "P1001", "procedure": "Knee Replacement", "status": "approved", "valid_days": 60}
+  ],
+  "procedure_costs": [
+    {"procedure": "Knee Replacement", "base_cost": 350000},
+    {"procedure": "MRI Scan", "base_cost": 8000},
+    {"procedure": "Cardiology Consultation", "base_cost": 1200},
+    {"procedure": "Cataract Surgery", "base_cost": 45000}
+  ]
+}

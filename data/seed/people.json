@@ -1,0 +1,30 @@
+{
+  "_note": "Synthetic demo data. Passwords are demo-only and hashed with bcrypt at seed time.",
+  "insurance_plans": [
+    {"id": "PLAN-GOLD", "name": "CarePlus Gold", "provider": "Demo Health Insurance Ltd"},
+    {"id": "PLAN-BASIC", "name": "CarePlus Basic", "provider": "Demo Health Insurance Ltd"}
+  ],
+  "patients": [
+    {
+      "id": "P1001", "full_name": "Arjun Mehta", "date_of_birth": "1968-04-12",
+      "phone": "+91-98200-41177", "insurance_plan_id": "PLAN-GOLD",
+      "policy_number": "GLD-4471-2290", "plan_start_date": "2023-01-10"
+    },
+    {
+      "id": "P1002", "full_name": "Priya Sharma", "date_of_birth": "1975-09-03",
+      "phone": "+91-98330-55120", "insurance_plan_id": "PLAN-GOLD",
+      "policy_number": "GLD-5512-7781", "plan_start_date": "2024-03-01"
+    },
+    {
+      "id": "P1003", "full_name": "Rahul Verma", "date_of_birth": "1982-01-25",
+      "phone": "+91-98920-30419", "insurance_plan_id": "PLAN-BASIC",
+      "policy_number": "BSC-3302-1145", "plan_start_date": "2022-07-15"
+    }
+  ],
+  "users": [
+    {"username": "patient1", "password": "Patient1@demo", "full_name": "Arjun Mehta", "role": "patient", "patient_id": "P1001"},
+    {"username": "patient2", "password": "Patient2@demo", "full_name": "Priya Sharma", "role": "patient", "patient_id": "P1002"},
+    {"username": "patient3", "password": "Patient3@demo", "full_name": "Rahul Verma", "role": "patient", "patient_id": "P1003"},
+    {"username": "admin1", "password": "Admin1@demo", "full_name": "Hospital Admin", "role": "admin", "patient_id": null}
+  ]
+}
