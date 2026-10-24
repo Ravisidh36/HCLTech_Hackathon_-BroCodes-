@@ -57,7 +57,11 @@ export function PatientChat() {
   const hasOpenAction = messages.some((m) => m.response?.pending_action && !m.decision)
   const now = useNow(hasOpenAction)
 
-  useEffect(() => endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' }), [messages, busy])
+  useEffect(() => {
+    // Block body on purpose: newer browsers return a Promise from scrollIntoView, and an effect
+    // must return nothing or a cleanup function.
+    endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
+  }, [messages, busy])
 
   const append = (message: Omit<Message, 'id'>) => {
     const id = nextId++

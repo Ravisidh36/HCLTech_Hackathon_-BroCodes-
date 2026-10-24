@@ -1,4 +1,7 @@
-# Hospital Patient Services Assistant — project guide
+# Nirog — Hospital Patient Services Assistant (project guide)
+
+Product name: **Nirog** (निरोग, "free from disease"). Logo: `frontend/src/components/Logo.tsx`
+(same art as `frontend/public/favicon.svg`).
 
 HCLTech Future Ready AI Engineer Hackathon, team BroCodes. Source of truth for requirements:
 `Hospital_AI_Assistant_Use_Case.pdf` (sections referenced as §n, requirements as R1–R11).

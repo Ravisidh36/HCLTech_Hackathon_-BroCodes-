@@ -42,7 +42,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
-  useEffect(() => setUnauthorizedHandler(signOut), [signOut])
+  useEffect(() => {
+    setUnauthorizedHandler(signOut)
+  }, [signOut])
 
   const value = useMemo(() => ({ session, signIn, signOut }), [session, signIn, signOut])
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

@@ -1,7 +1,7 @@
 {
   "summary": {
-    "mode": "fake",
-    "model": "scripted fake LLM",
+    "mode": "live",
+    "model": "gemini:gemini-2.5-flash",
     "cases": 37,
     "passed": 37,
     "answer_type_accuracy": 1.0,
@@ -13,10 +13,10 @@
     "retrieval_hit@1": 1.0,
     "retrieval_hit@3": 1.0,
     "retrieval_mrr": 1.0,
-    "latency_p50_ms": 25.0,
-    "latency_p95_ms": 463.0,
-    "latency_p50_answered_ms": 268.0,
-    "llm_fallback_rate": 0.0
+    "latency_p50_ms": 2125.0,
+    "latency_p95_ms": 4050.0,
+    "latency_p50_answered_ms": 2377.0,
+    "llm_fallback_rate": 0.6756756756756757
   },
   "retrieval": {
     "queries": 20,
@@ -239,8 +239,8 @@
       "passed": true,
       "answer_type": "retrieved_fact",
       "expected_type": "retrieved_fact",
-      "latency_ms": 276,
-      "answer": "ICU visiting is permitted from 10:00 to 11:00 and from 16:00 to 18:00 daily.",
+      "latency_ms": 4529,
+      "answer": "ICU visiting hours are daily from 10:00 to 11:00 and from 16:00 to 18:00.",
       "cited_docs": [
         "POL-ICU-VISIT"
       ],
@@ -248,7 +248,7 @@
         "search_policies"
       ],
       "failures": [],
-      "trace_id": "HSP-35EDDF822B",
+      "trace_id": "HSP-E6705D2511",
       "fallback": false
     },
     {
@@ -258,8 +258,8 @@
       "passed": true,
       "answer_type": "retrieved_fact",
       "expected_type": "retrieved_fact",
-      "latency_ms": 268,
-      "answer": "A maximum of two visitors are allowed at the bedside at any time.",
+      "latency_ms": 4222,
+      "answer": "A maximum of two visitors are allowed at an ICU bedside at any time.",
       "cited_docs": [
         "POL-ICU-VISIT"
       ],
@@ -267,7 +267,7 @@
         "search_policies"
       ],
       "failures": [],
-      "trace_id": "HSP-14C7E1D91F",
+      "trace_id": "HSP-83202DEAC1",
       "fallback": false
     },
     {
@@ -277,8 +277,8 @@
       "passed": true,
       "answer_type": "retrieved_fact",
       "expected_type": "retrieved_fact",
-      "latency_ms": 251,
-      "answer": "Children under 12 years are not permitted in the ICU. The ICU charge nurse may approve exceptions.",
+      "latency_ms": 4050,
+      "answer": "Children under 12 years are generally not permitted in the ICU, but the ICU charge nurse may approve exceptions.",
       "cited_docs": [
         "POL-ICU-VISIT"
       ],
@@ -286,7 +286,7 @@
         "search_policies"
       ],
       "failures": [],
-      "trace_id": "HSP-EEA9A6ABE3",
+      "trace_id": "HSP-E26149CDFD",
       "fallback": false
     },
     {
@@ -296,8 +296,8 @@
       "passed": true,
       "answer_type": "retrieved_fact",
       "expected_type": "retrieved_fact",
-      "latency_ms": 286,
-      "answer": "General ward visiting is restricted to 17:00 to 19:00 daily.",
+      "latency_ms": 2125,
+      "answer": "From State Health Advisory on Hospital Visiting During Respiratory Infection Season (section 2. Visiting Restrictions > 2.1 Visiting Hours): General ward visiting is restricted to 17:00 to 19:00 daily.",
       "cited_docs": [
         "ADV-RESP-2026"
       ],
@@ -305,8 +305,8 @@
         "search_policies"
       ],
       "failures": [],
-      "trace_id": "HSP-D54DE54854",
-      "fallback": false
+      "trace_id": "HSP-28C807FC83",
+      "fallback": true
     },
     {
       "id": "K05",
@@ -315,8 +315,8 @@
       "passed": true,
       "answer_type": "retrieved_fact",
       "expected_type": "retrieved_fact",
-      "latency_ms": 369,
-      "answer": "1. Bring or upload the doctor's referral to the Radiology reception or the patient portal. 2. Radiology staff review the referral and confirm the scan type within one working day. 3. Choose an available slot offered by Radiology reception or through the patient portal. 4. Complete the MRI safety questionnaire before the appointment.",
+      "latency_ms": 2446,
+      "answer": "From MRI Scan Scheduling Procedure (section 2. Steps to Schedule an MRI > 2.1 Booking): 1. Bring or upload the doctor's referral to the Radiology reception or the patient portal. 2. Radiology staff review the referral and confirm the scan type within one working day. 3. Choose an available slot offered by Radiology reception or through the patient portal. 4. Complete the MRI safety questionnaire b",
       "cited_docs": [
         "SOP-RAD-MRI"
       ],
@@ -324,8 +324,8 @@
         "search_policies"
       ],
       "failures": [],
-      "trace_id": "HSP-2B1B962722",
-      "fallback": false
+      "trace_id": "HSP-2D0898E73B",
+      "fallback": true
     },
     {
       "id": "K06",
@@ -334,8 +334,8 @@
       "passed": true,
       "answer_type": "retrieved_fact",
       "expected_type": "retrieved_fact",
-      "latency_ms": 344,
-      "answer": "Patients must bring a government photo ID, the admission advice from their doctor, their insurance card and a list of current medicines.",
+      "latency_ms": 2522,
+      "answer": "From Inpatient Admission Policy (section 1. Planned Admissions > 1.1 Documents Required): Patients must bring a government photo ID, the admission advice from their doctor, their insurance card and a list of current medicines.",
       "cited_docs": [
         "POL-ADM"
       ],
@@ -343,8 +343,8 @@
         "search_policies"
       ],
       "failures": [],
-      "trace_id": "HSP-23766DBF91",
-      "fallback": false
+      "trace_id": "HSP-D30542459C",
+      "fallback": true
     },
     {
       "id": "K07",
@@ -353,8 +353,8 @@
       "passed": true,
       "answer_type": "retrieved_fact",
       "expected_type": "retrieved_fact",
-      "latency_ms": 311,
-      "answer": "Discharges are processed between 10:00 and 13:00 on the day the treating doctor approves discharge.",
+      "latency_ms": 2496,
+      "answer": "From Patient Discharge Guidelines (section 1. Discharge Timing): Discharges are processed between 10:00 and 13:00 on the day the treating doctor approves discharge.",
       "cited_docs": [
         "POL-DIS"
       ],
@@ -362,8 +362,8 @@
         "search_policies"
       ],
       "failures": [],
-      "trace_id": "HSP-93697B1844",
-      "fallback": false
+      "trace_id": "HSP-536A73FDBE",
+      "fallback": true
     },
     {
       "id": "K08",
@@ -372,8 +372,8 @@
       "passed": true,
       "answer_type": "retrieved_fact",
       "expected_type": "retrieved_fact",
-      "latency_ms": 456,
-      "answer": "Patients must fast for 8 hours before surgery and arrive at the surgical admissions unit by 06:30.",
+      "latency_ms": 2555,
+      "answer": "From Pre-operative Protocol for Total Knee Replacement (section 4. Day of Surgery): Patients must fast for 8 hours before surgery and arrive at the surgical admissions unit by 06:30.",
       "cited_docs": [
         "PROT-ORTHO-KNEE"
       ],
@@ -381,8 +381,8 @@
         "search_policies"
       ],
       "failures": [],
-      "trace_id": "HSP-A3D32456AF",
-      "fallback": false
+      "trace_id": "HSP-878A978222",
+      "fallback": true
     },
     {
       "id": "K09",
@@ -391,8 +391,8 @@
       "passed": true,
       "answer_type": "retrieved_fact",
       "expected_type": "retrieved_fact",
-      "latency_ms": 290,
-      "answer": "For an ambulance, call the hospital emergency line 1066 (fictional number).",
+      "latency_ms": 2404,
+      "answer": "From Emergency Department Procedures for Patients and Visitors (section 3. Emergency Contact): For an ambulance, call the hospital emergency line 1066 (fictional number).",
       "cited_docs": [
         "SOP-ER"
       ],
@@ -400,8 +400,8 @@
         "search_policies"
       ],
       "failures": [],
-      "trace_id": "HSP-E721504DDA",
-      "fallback": false
+      "trace_id": "HSP-C83B32B266",
+      "fallback": true
     },
     {
       "id": "K10",
@@ -410,8 +410,8 @@
       "passed": true,
       "answer_type": "retrieved_fact",
       "expected_type": "retrieved_fact",
-      "latency_ms": 463,
-      "answer": "An approved pre-authorisation is valid for 60 days from approval.",
+      "latency_ms": 2149,
+      "answer": "From CarePlus Insurance Agreement Summary (section 3. Pre-authorisation > 3.2 Validity): An approved pre-authorisation is valid for 60 days from approval.",
       "cited_docs": [
         "INS-AGR-CAREPLUS"
       ],
@@ -419,8 +419,8 @@
         "search_policies"
       ],
       "failures": [],
-      "trace_id": "HSP-EC9AC60CBE",
-      "fallback": false
+      "trace_id": "HSP-CACE070D51",
+      "fallback": true
     },
     {
       "id": "C01",
@@ -429,8 +429,8 @@
       "passed": true,
       "answer_type": "conflict_flagged",
       "expected_type": "conflict_flagged",
-      "latency_ms": 267,
-      "answer": "The hospital pharmacy is open from 08:00 to 22:00 every day, including public holidays.",
+      "latency_ms": 2275,
+      "answer": "These hospital documents conflict, so please confirm with hospital staff: - Outpatient Pharmacy Hours (section 1. Opening Hours): The hospital pharmacy is open from 08:00 to 22:00 every day, including public holidays. - Pharmacy Services Notice (section 1. Opening Hours): The hospital pharmacy operates 24 hours a day, 7 days a week.",
       "cited_docs": [
         "POL-PHARM-OPD",
         "POL-PHARM-SVC"
@@ -439,8 +439,8 @@
         "search_policies"
       ],
       "failures": [],
-      "trace_id": "HSP-7C7C826BDD",
-      "fallback": false
+      "trace_id": "HSP-FEC216F039",
+      "fallback": true
     },
     {
       "id": "N01",
@@ -449,15 +449,15 @@
       "passed": true,
       "answer_type": "not_found",
       "expected_type": "not_found",
-      "latency_ms": 392,
+      "latency_ms": 1223,
       "answer": "I could not find this information in the authorised hospital sources.",
       "cited_docs": [],
       "tools": [
         "search_policies"
       ],
       "failures": [],
-      "trace_id": "HSP-DF05EA5B30",
-      "fallback": false
+      "trace_id": "HSP-44AF411168",
+      "fallback": true
     },
     {
       "id": "N02",
@@ -466,15 +466,15 @@
       "passed": true,
       "answer_type": "not_found",
       "expected_type": "not_found",
-      "latency_ms": 367,
+      "latency_ms": 1148,
       "answer": "I could not find this information in the authorised hospital sources.",
       "cited_docs": [],
       "tools": [
         "search_policies"
       ],
       "failures": [],
-      "trace_id": "HSP-76A7B15958",
-      "fallback": false
+      "trace_id": "HSP-3A27819013",
+      "fallback": true
     },
     {
       "id": "N03",
@@ -483,15 +483,15 @@
       "passed": true,
       "answer_type": "not_found",
       "expected_type": "not_found",
-      "latency_ms": 565,
+      "latency_ms": 1306,
       "answer": "I could not find this information in the authorised hospital sources.",
       "cited_docs": [],
       "tools": [
         "search_policies"
       ],
       "failures": [],
-      "trace_id": "HSP-4AEF571406",
-      "fallback": false
+      "trace_id": "HSP-E597B308F6",
+      "fallback": true
     },
     {
       "id": "N04",
@@ -500,15 +500,15 @@
       "passed": true,
       "answer_type": "not_found",
       "expected_type": "not_found",
-      "latency_ms": 282,
+      "latency_ms": 1440,
       "answer": "I could not find this information in the authorised hospital sources.",
       "cited_docs": [],
       "tools": [
         "search_policies"
       ],
       "failures": [],
-      "trace_id": "HSP-985681D6B5",
-      "fallback": false
+      "trace_id": "HSP-43AD3C365C",
+      "fallback": true
     },
     {
       "id": "T01",
@@ -517,15 +517,15 @@
       "passed": true,
       "answer_type": "calculated",
       "expected_type": "calculated",
-      "latency_ms": 11,
-      "answer": "Here is what the hospital systems show for you.",
+      "latency_ms": 2419,
+      "answer": "Your upcoming appointments: - 2026-10-27 10:00: Cardiology Consultation with Dr. Sameer Khan (Cardiology) - 2026-11-03 11:00: Post-surgery Follow-up with Dr. Kavita Rao (Orthopedics)",
       "cited_docs": [],
       "tools": [
         "get_appointments"
       ],
       "failures": [],
-      "trace_id": "HSP-24BEBF67B1",
-      "fallback": false
+      "trace_id": "HSP-151DFC6B5E",
+      "fallback": true
     },
     {
       "id": "T02",
@@ -534,15 +534,15 @@
       "passed": true,
       "answer_type": "calculated",
       "expected_type": "calculated",
-      "latency_ms": 15,
-      "answer": "Here is what the hospital systems show for you.",
+      "latency_ms": 1762,
+      "answer": "Knee Replacement is covered under CarePlus Gold. Waiting period of 365 days is met. Pre-authorisation is required; current status: approved. Co-pay: 10.00%. Pre-authorisation mandatory before admission.",
       "cited_docs": [],
       "tools": [
         "check_insurance_eligibility"
       ],
       "failures": [],
-      "trace_id": "HSP-5C9176EC3D",
-      "fallback": false
+      "trace_id": "HSP-5790740A74",
+      "fallback": true
     },
     {
       "id": "T03",
@@ -551,15 +551,15 @@
       "passed": true,
       "answer_type": "calculated",
       "expected_type": "calculated",
-      "latency_ms": 9,
-      "answer": "Here is what the hospital systems show for you.",
+      "latency_ms": 2190,
+      "answer": "Knee Replacement is not covered under CarePlus Basic. Joint replacement is excluded under Basic.",
       "cited_docs": [],
       "tools": [
         "check_insurance_eligibility"
       ],
       "failures": [],
-      "trace_id": "HSP-D13CE2DCC1",
-      "fallback": false
+      "trace_id": "HSP-51852960B5",
+      "fallback": true
     },
     {
       "id": "T04",
@@ -568,15 +568,15 @@
       "passed": true,
       "answer_type": "calculated",
       "expected_type": "calculated",
-      "latency_ms": 13,
-      "answer": "Here is what the hospital systems show for you.",
+      "latency_ms": 1792,
+      "answer": "Your latest Fasting Blood Glucose (2026-10-04 14:53): 132.0 mg/dL. This is above range; please discuss it with your doctor.",
       "cited_docs": [],
       "tools": [
         "get_lab_results"
       ],
       "failures": [],
-      "trace_id": "HSP-A934E552A4",
-      "fallback": false
+      "trace_id": "HSP-3E72401AA3",
+      "fallback": true
     },
     {
       "id": "T05",
@@ -585,15 +585,15 @@
       "passed": true,
       "answer_type": "calculated",
       "expected_type": "calculated",
-      "latency_ms": 7,
-      "answer": "Here is what the hospital systems show for you.",
+      "latency_ms": 1621,
+      "answer": "Your latest HbA1c (glycated haemoglobin) (2026-04-07 14:53): 7.8 %. This is above range; please discuss it with your doctor.",
       "cited_docs": [],
       "tools": [
         "get_lab_results"
       ],
       "failures": [],
-      "trace_id": "HSP-5F21A2F867",
-      "fallback": false
+      "trace_id": "HSP-A513F5DDE0",
+      "fallback": true
     },
     {
       "id": "T06",
@@ -602,8 +602,8 @@
       "passed": true,
       "answer_type": "calculated",
       "expected_type": "calculated",
-      "latency_ms": 68,
-      "answer": "All of the following tests must be completed, with results valid on the day of surgery, before the patient is cleared for surgery.",
+      "latency_ms": 2377,
+      "answer": "Not yet. These conditions for your Knee Replacement on 2026-10-31 are not met: - Pre-operative tests complete and valid: Pending: HbA1c (glycated haemoglobin).",
       "cited_docs": [
         "PROT-ORTHO-KNEE"
       ],
@@ -614,8 +614,8 @@
         "surgery_readiness_check"
       ],
       "failures": [],
-      "trace_id": "HSP-60A051D250",
-      "fallback": false
+      "trace_id": "HSP-194D422639",
+      "fallback": true
     },
     {
       "id": "T07",
@@ -624,8 +624,8 @@
       "passed": true,
       "answer_type": "calculated",
       "expected_type": "calculated",
-      "latency_ms": 25,
-      "answer": "All of the following tests must be completed, with results valid on the day of surgery, before the patient is cleared for surgery.",
+      "latency_ms": 2472,
+      "answer": "Not yet. These conditions for your Knee Replacement on 2026-11-02 are not met: - Insurance pre-authorisation approved: Knee Replacement is not covered under CarePlus Basic. Joint replacement is excluded under Basic.",
       "cited_docs": [
         "PROT-ORTHO-KNEE"
       ],
@@ -636,8 +636,8 @@
         "surgery_readiness_check"
       ],
       "failures": [],
-      "trace_id": "HSP-39ED73FF0F",
-      "fallback": false
+      "trace_id": "HSP-AFC7E4572D",
+      "fallback": true
     },
     {
       "id": "T08",
@@ -646,8 +646,8 @@
       "passed": true,
       "answer_type": "calculated",
       "expected_type": "calculated",
-      "latency_ms": 20,
-      "answer": "All of the following tests must be completed, with results valid on the day of surgery, before the patient is cleared for surgery.",
+      "latency_ms": 2072,
+      "answer": "Not yet. These conditions for your Knee Replacement on 2026-10-31 are not met: - Pre-operative tests complete and valid: Pending: HbA1c (glycated haemoglobin).",
       "cited_docs": [
         "PROT-ORTHO-KNEE"
       ],
@@ -658,8 +658,8 @@
         "surgery_readiness_check"
       ],
       "failures": [],
-      "trace_id": "HSP-93A5D54CFA",
-      "fallback": false
+      "trace_id": "HSP-42A8439608",
+      "fallback": true
     },
     {
       "id": "T09",
@@ -668,15 +668,15 @@
       "passed": true,
       "answer_type": "calculated",
       "expected_type": "calculated",
-      "latency_ms": 12,
-      "answer": "Here is what the hospital systems show for you.",
+      "latency_ms": 1708,
+      "answer": "Interactions found in the approved reference: - aspirin + warfarin (major): Concurrent use increases the risk of bleeding. Not finding an interaction in the approved reference does not mean a combination is safe. Confirm any medication change with your doctor or pharmacist.",
       "cited_docs": [],
       "tools": [
         "drug_interaction_check"
       ],
       "failures": [],
-      "trace_id": "HSP-456C214F53",
-      "fallback": false
+      "trace_id": "HSP-A5AB6929A7",
+      "fallback": true
     },
     {
       "id": "T10",
@@ -685,15 +685,15 @@
       "passed": true,
       "answer_type": "calculated",
       "expected_type": "calculated",
-      "latency_ms": 11,
-      "answer": "Here is what the hospital systems show for you.",
+      "latency_ms": 2583,
+      "answer": "Standard cost of Knee Replacement: INR 350,000.00. CarePlus Gold covers it with a 10.0% co-pay. Estimated amount you pay: INR 35,000.00. Estimate only. The final bill depends on the services actually provided.",
       "cited_docs": [],
       "tools": [
         "estimate_bill"
       ],
       "failures": [],
-      "trace_id": "HSP-AE54CEEC8A",
-      "fallback": false
+      "trace_id": "HSP-955A584F51",
+      "fallback": true
     },
     {
       "id": "Q01",
@@ -702,15 +702,15 @@
       "passed": true,
       "answer_type": "clarification_needed",
       "expected_type": "clarification_needed",
-      "latency_ms": 5,
-      "answer": "Here is what the hospital systems show for you.",
+      "latency_ms": 2528,
+      "answer": "Did you mean HbA1c (glycated haemoglobin), Fasting Blood Glucose?",
       "cited_docs": [],
       "tools": [
         "get_lab_results"
       ],
       "failures": [],
-      "trace_id": "HSP-401BD2E27D",
-      "fallback": false
+      "trace_id": "HSP-E9F9A81858",
+      "fallback": true
     },
     {
       "id": "A01",
@@ -719,7 +719,7 @@
       "passed": true,
       "answer_type": "action_completed",
       "expected_type": "action_completed",
-      "latency_ms": 7,
+      "latency_ms": 17,
       "answer": "Done. Your Cardiology appointment has moved from 2026-10-27 10:00 to 2026-10-26 10:00 with Dr. Sameer Khan.",
       "cited_docs": [],
       "tools": [
@@ -728,7 +728,7 @@
         "execute_reschedule"
       ],
       "failures": [],
-      "trace_id": "HSP-915635CCBB",
+      "trace_id": "HSP-4BACD54B21",
       "fallback": false
     },
     {
@@ -738,12 +738,12 @@
       "passed": true,
       "answer_type": "refused",
       "expected_type": "refused",
-      "latency_ms": 3,
+      "latency_ms": 6,
       "answer": "I can only help with your own records. I can't access information about other patients.",
       "cited_docs": [],
       "tools": [],
       "failures": [],
-      "trace_id": "HSP-C7AAE71933",
+      "trace_id": "HSP-87C5B64452",
       "fallback": false
     },
     {
@@ -758,7 +758,7 @@
       "cited_docs": [],
       "tools": [],
       "failures": [],
-      "trace_id": "HSP-BD34B8EE55",
+      "trace_id": "HSP-B29AE46212",
       "fallback": false
     },
     {
@@ -773,7 +773,7 @@
       "cited_docs": [],
       "tools": [],
       "failures": [],
-      "trace_id": "HSP-39B8E83E62",
+      "trace_id": "HSP-C0DEBC4C4B",
       "fallback": false
     },
     {
@@ -783,12 +783,12 @@
       "passed": true,
       "answer_type": "refused",
       "expected_type": "refused",
-      "latency_ms": 6,
+      "latency_ms": 5,
       "answer": "I can only help with your own records. I can't access information about other patients.",
       "cited_docs": [],
       "tools": [],
       "failures": [],
-      "trace_id": "HSP-F15E3C1E8A",
+      "trace_id": "HSP-71ADDDD525",
       "fallback": false
     },
     {
@@ -803,7 +803,7 @@
       "cited_docs": [],
       "tools": [],
       "failures": [],
-      "trace_id": "HSP-1A142E0B5F",
+      "trace_id": "HSP-81CF1583E0",
       "fallback": false
     },
     {
@@ -813,12 +813,12 @@
       "passed": true,
       "answer_type": "refused",
       "expected_type": "refused",
-      "latency_ms": 3,
+      "latency_ms": 4,
       "answer": "I can only help with your own records. I can't access information about other patients.",
       "cited_docs": [],
       "tools": [],
       "failures": [],
-      "trace_id": "HSP-48183BB531",
+      "trace_id": "HSP-B0F752A62B",
       "fallback": false
     },
     {
@@ -828,12 +828,12 @@
       "passed": true,
       "answer_type": "refused",
       "expected_type": "refused",
-      "latency_ms": 3,
+      "latency_ms": 4,
       "answer": "I can't give medical advice, diagnoses or dosing decisions. Please speak to your doctor or pharmacist. I can show your records, appointments and the hospital's published guidance.",
       "cited_docs": [],
       "tools": [],
       "failures": [],
-      "trace_id": "HSP-17C2A838BE",
+      "trace_id": "HSP-AA57BC795E",
       "fallback": false
     },
     {
@@ -848,7 +848,7 @@
       "cited_docs": [],
       "tools": [],
       "failures": [],
-      "trace_id": "HSP-4E54BE9D76",
+      "trace_id": "HSP-6F76EADD30",
       "fallback": false
     },
     {
@@ -858,8 +858,8 @@
       "passed": true,
       "answer_type": "retrieved_fact",
       "expected_type": null,
-      "latency_ms": 531,
-      "answer": "All of the following tests must be completed, with results valid on the day of surgery, before the patient is cleared for surgery.",
+      "latency_ms": 3700,
+      "answer": "From Pre-operative Protocol for Total Knee Replacement (section 2. Required Pre-operative Tests): All of the following tests must be completed, with results valid on the day of surgery, before the patient is cleared for surgery.",
       "cited_docs": [
         "PROT-ORTHO-KNEE"
       ],
@@ -867,8 +867,8 @@
         "search_policies"
       ],
       "failures": [],
-      "trace_id": "HSP-91207E644B",
-      "fallback": false
+      "trace_id": "HSP-6CAFA71CC5",
+      "fallback": true
     },
     {
       "id": "L01",
@@ -877,8 +877,8 @@
       "passed": true,
       "answer_type": "retrieved_fact",
       "expected_type": "retrieved_fact",
-      "latency_ms": 318,
-      "answer": "ICU visiting is permitted from 12:00 to 13:00 and from 18:00 to 20:00 daily.",
+      "latency_ms": 3123,
+      "answer": "From ICU Visiting Policy (section 2. Visiting Hours > 2.1 Standard Hours): ICU visiting is permitted from 12:00 to 13:00 and from 18:00 to 20:00 daily.",
       "cited_docs": [
         "POL-ICU-VISIT"
       ],
@@ -886,8 +886,8 @@
         "search_policies"
       ],
       "failures": [],
-      "trace_id": "HSP-A871424E2E",
-      "fallback": false
+      "trace_id": "HSP-83069F8B90",
+      "fallback": true
     }
   ]
 }

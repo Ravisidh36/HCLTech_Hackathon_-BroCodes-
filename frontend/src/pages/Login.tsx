@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { ApiError, api } from '../api/client'
 import { useAuth } from '../auth'
+import { Logo } from '../components/Logo'
 
 // Synthetic demo accounts from data/seed/people.json.
 const DEMO_ACCOUNTS = [
@@ -37,14 +38,15 @@ export function Login() {
     <main className="login">
       <div className="login-card">
         <div className="brand brand-large">
-          <span className="brand-mark" aria-hidden>
-            +
-          </span>
+          <Logo size={52} />
           <div>
-            <div className="brand-name">Patient Services Assistant</div>
-            <div className="brand-sub">Demo City Hospital</div>
+            <div className="brand-name">Nirog</div>
+            <div className="brand-sub">Patient Services Assistant · Demo City Hospital</div>
           </div>
         </div>
+        <p className="muted small tagline">
+          Grounded answers from approved hospital documents, your own records, and nothing else.
+        </p>
 
         <form className="form" onSubmit={onSubmit}>
           <label className="field field-wide">

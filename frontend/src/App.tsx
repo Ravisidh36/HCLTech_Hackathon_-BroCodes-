@@ -1,4 +1,5 @@
 import { AuthProvider, useAuth } from './auth'
+import { Logo } from './components/Logo'
 import { AdminConsole } from './pages/AdminConsole'
 import { Login } from './pages/Login'
 import { PatientChat } from './pages/PatientChat'
@@ -12,12 +13,12 @@ function Shell() {
     <div className="app">
       <header className="topbar">
         <div className="brand">
-          <span className="brand-mark" aria-hidden>
-            +
-          </span>
+          <Logo size={34} />
           <div>
-            <div className="brand-name">Patient Services Assistant</div>
-            <div className="brand-sub">Demo City Hospital{isAdmin ? ' · Administration' : ''}</div>
+            <div className="brand-name">Nirog</div>
+            <div className="brand-sub">
+              {isAdmin ? 'Administration' : 'Patient Services Assistant'} · Demo City Hospital
+            </div>
           </div>
         </div>
         <div className="user">
