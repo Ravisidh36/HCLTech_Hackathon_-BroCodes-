@@ -54,6 +54,8 @@ class Settings(BaseSettings):
     # Paths
     kb_dir: Path = ROOT_DIR / "data" / "kb"
     seed_dir: Path = ROOT_DIR / "data" / "seed"
+    upload_dir: Path = ROOT_DIR / "data" / "uploads"
+    max_upload_mb: int = 10
 
     def _url(self, user: str, password: str, database: str) -> URL:
         return URL.create(

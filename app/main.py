@@ -7,7 +7,7 @@ from fastapi import FastAPI, Request
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
-from app.api import auth, chat
+from app.api import actions, admin, auth, chat
 from app.api.ratelimit import limiter
 from app.config import get_settings
 from app.db import SessionLocal, check_db
@@ -51,6 +51,8 @@ async def trace_requests(request: Request, call_next):
 
 app.include_router(auth.router)
 app.include_router(chat.router)
+app.include_router(actions.router)
+app.include_router(admin.router)
 
 
 @app.get("/health")
