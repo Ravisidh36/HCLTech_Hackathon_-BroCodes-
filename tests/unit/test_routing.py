@@ -65,12 +65,18 @@ OPTIONS = [
         ("Wednesday", 13),
         ("11.30", 12),
         ("28 oct at 10:00", 13),
+        ("2026-10-27 11:30", 12),  # copied exactly from the slot list
+        ("2026-10-28 10:00 with Dr. Sameer Khan", 13),
+        ("27/10 at 10:00", 11),
+        ("28-10", 13),
     ],
 )
 def test_slot_choice_matches(preference, slot_id):
     assert match_slot(preference, OPTIONS) == slot_id
 
 
-@pytest.mark.parametrize("preference", ["10:00", "Tuesday", "sometime next month", "fifth", "9 pm"])
+@pytest.mark.parametrize(
+    "preference", ["10:00", "Tuesday", "sometime next month", "fifth", "9 pm", "2026-10-29 13:00", "28 oct at 11:30"]
+)
 def test_slot_choice_ambiguous_or_unmatched_returns_none(preference):
     assert match_slot(preference, OPTIONS) is None
